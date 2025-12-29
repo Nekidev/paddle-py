@@ -8,9 +8,9 @@ file.
 To install the package, install it from pypi:
 
 ```sh
-uv add pypaddle
+uv add python-paddle
 # or
-pip install pypaddle
+pip install python-paddle
 ```
 
 Or your favorite package manager.
