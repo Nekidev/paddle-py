@@ -1,6 +1,6 @@
+from __future__ import annotations
 from typing import Annotated
 from pydantic import Field
-from __future__ import annotations
 from enum import Enum
 from pydantic import BaseModel, Field
 from . import CurrencyCodePayout, Event, NotificationId

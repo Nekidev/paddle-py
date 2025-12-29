@@ -26,42 +26,35 @@ import astor
 from pathlib import Path
 
 
+def field_ast(type: str, args, keywords):
+    return ast.Subscript(
+        value=ast.Name(id="Annotated", ctx=ast.Load()),
+        slice=ast.Tuple(
+            elts=[
+                ast.Name(id=type, ctx=ast.Load()),
+                ast.Call(
+                    func=ast.Name(id="Field", ctx=ast.Load()),
+                    args=args,
+                    keywords=keywords,
+                ),
+            ],
+            ctx=ast.Load(),
+        ),
+        ctx=ast.Load(),
+    )
+
+
 def transform_node(node):
     import ast
 
     if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
         if node.func.id == "confloat":
-            return ast.Subscript(
-                value=ast.Name(id="Annotated", ctx=ast.Load()),
-                slice=ast.Tuple(
-                    elts=[
-                        ast.Name(id="float", ctx=ast.Load()),
-                        ast.Call(
-                            func=ast.Name(id="Field", ctx=ast.Load()),
-                            args=[],
-                            keywords=node.keywords,
-                        ),
-                    ],
-                    ctx=ast.Load(),
-                ),
-                ctx=ast.Load(),
-            )
+            return field_ast("float", node.args, node.keywords)
         elif node.func.id == "constr":
-            return ast.Subscript(
-                value=ast.Name(id="Annotated", ctx=ast.Load()),
-                slice=ast.Tuple(
-                    elts=[
-                        ast.Name(id="str", ctx=ast.Load()),
-                        ast.Call(
-                            func=ast.Name(id="Field", ctx=ast.Load()),
-                            args=[],
-                            keywords=node.keywords,
-                        ),
-                    ],
-                    ctx=ast.Load(),
-                ),
-                ctx=ast.Load(),
-            )
+            return field_ast("str", node.args, node.keywords)
+        elif node.func.id == "conint":
+            return field_ast("int", node.args, node.keywords)
+
     return node
 
 
@@ -85,12 +78,24 @@ def transform_file(file_path: Path):
 
     new_code = re.sub(r"\(([a-zA-Z0-9_]+: )", r"\1 (", new_code)
     new_code = new_code.replace("constr,", "")
+    new_code = new_code.replace("conint,", "")
     new_code = new_code.replace("confloat,", "")
+
+    lines = new_code.splitlines()
+
+    for i, line in enumerate(lines):
+        if line.startswith("from __future__"):
+            # move line to the top, __future__ imports must be first
+
+            lines.insert(0, lines.pop(i))
+            break
+
+    new_code = "\n".join(lines)
 
     file_path.write_text(new_code)
 
 
-for file in Path("./out").rglob("*.py"):
+for file in Path("./paddle/schemas").rglob("*.py"):
     print(f"Formatting {file}...")
 
     transform_file(file)

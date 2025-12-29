@@ -1,6 +1,6 @@
+from __future__ import annotations
 from typing import Annotated
 from pydantic import Field
-from __future__ import annotations
 from enum import Enum
 from typing import Any, Literal
 from pydantic import (
@@ -11,7 +11,6 @@ from pydantic import (
     EmailStr,
     Field,
     RootModel,
-    conint,
     constr,
 )
 
@@ -723,7 +722,7 @@ class Interval(Enum):
 
 class Duration(BaseModel):
     interval: Interval = Field(..., description="Unit of time.")
-    frequency: conint(ge=1) = Field(..., description="Amount of time.")
+    frequency: Annotated[int, Field(ge=1)] = Field(..., description="Amount of time.")
 
 
 class EffectiveFrom(Enum):
@@ -900,6 +899,41 @@ class Status1(Enum):
     trialing = "trialing"
 
 
+class Type5(Enum):
+    bc = "bc"
+    citi = "citi"
+    hana = "hana"
+    hyundai = "hyundai"
+    jeju = "jeju"
+    jeonbuk = "jeonbuk"
+    kakaobank = "kakaobank"
+    kakaopay = "kakaopay"
+    kbank = "kbank"
+    kdbbank = "kdbbank"
+    kookmin = "kookmin"
+    kwangju = "kwangju"
+    lotte = "lotte"
+    mg = "mg"
+    naverpaycard = "naverpaycard"
+    naverpaypoint = "naverpaypoint"
+    nh = "nh"
+    payco = "payco"
+    post = "post"
+    samsung = "samsung"
+    samsungpay = "samsungpay"
+    savingsbank = "savingsbank"
+    shinhan = "shinhan"
+    shinhyup = "shinhyup"
+    suhyup = "suhyup"
+    tossbank = "tossbank"
+    unknown = "unknown"
+    woori = "woori"
+
+
+class KoreaLocalUnderlyingDetails(BaseModel):
+    type: Type5 | None = None
+
+
 class KoreaLocalUnderlyingPaymentMethodType(Enum):
     bc = "bc"
     citi = "citi"
@@ -974,7 +1008,7 @@ class NotificationLogId(
     )
 
 
-class Type5(Enum):
+class Type6(Enum):
     email = "email"
     url = "url"
 
@@ -997,7 +1031,7 @@ class NotificationSettingUpdate(BaseModel):
         True,
         description="Whether Paddle should try to deliver events to this notification destination.",
     )
-    api_version: conint(ge=1) | None = Field(
+    api_version: Annotated[int, Field(ge=1)] | None = Field(
         None,
         description="API version that returned objects for events should conform to. Must be a valid version of the Paddle API. Can't be a version older than your account default. Defaults to your account default if omitted.",
     )
@@ -1182,12 +1216,12 @@ class PriceName(RootModel[Annotated[str, Field(min_length=1, max_length=150)] | 
 
 
 class PriceQuantity(BaseModel):
-    minimum: conint(ge=1, le=999999999) = Field(
+    minimum: Annotated[int, Field(ge=1, le=999999999)] = Field(
         ...,
         description="Minimum quantity of the product related to this price that can be bought. Required if `maximum` set.",
         examples=[1],
     )
-    maximum: conint(ge=1, le=999999999) = Field(
+    maximum: Annotated[int, Field(ge=1, le=999999999)] = Field(
         ...,
         description="Maximum quantity of the product related to this price that can be bought. Required if `minimum` set. Must be greater than or equal to the `minimum` value.",
         examples=[100],
@@ -1196,7 +1230,7 @@ class PriceQuantity(BaseModel):
 
 class PriceTrialDuration(BaseModel):
     interval: Interval = Field(..., description="Unit of time.")
-    frequency: conint(ge=1) = Field(..., description="Amount of time.")
+    frequency: Annotated[int, Field(ge=1)] = Field(..., description="Amount of time.")
 
 
 class ProductId(RootModel[Annotated[str, Field(pattern="^pro_[a-z\\d]{26}$")]]):
@@ -1214,15 +1248,15 @@ class ProductName(RootModel[Annotated[str, Field(min_length=1, max_length=200)]]
     )
 
 
-class Type7(Enum):
+class Type8(Enum):
     balance = "balance"
 
 
-class Type8(Enum):
+class Type9(Enum):
     discounts = "discounts"
 
 
-class Type9(Enum):
+class Type10(Enum):
     products_prices = "products_prices"
 
 
@@ -1435,6 +1469,38 @@ class SimulationConfigEntitiesSubscriptionCreationNoPrices(BaseModel):
     transaction_id: None = Field(
         None,
         description="Paddle ID of an existing transaction. Simulates passing a transaction ID to Paddle.js.",
+    )
+
+
+class SimulationConfigEntitiesSubscriptionCreationTransaction(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    customer_id: CustomerId | None = Field(
+        None,
+        description="Paddle ID of a customer. Adds customer details to webhook payloads.",
+    )
+    address_id: AddressId | None = Field(
+        None,
+        description="Paddle ID of an address. Adds address details to webhook payloads. Requires `customer_id`.",
+    )
+    business_id: BusinessId | None = Field(
+        None,
+        description="Paddle ID of a business. Adds business details to webhook payloads. Requires `customer_id`.",
+    )
+    payment_method_id: PaymentMethodId | None = Field(
+        None,
+        description="Paddle ID of a payment method. Adds payment method details to webhook payloads. Requires `customer_id`.",
+    )
+    discount_id: DiscountId | None = Field(
+        None,
+        description="Paddle ID of a discount. Adds discount details (including price calculations) to webhook payloads. Requires `items` or `transaction_id` for the discount to be applied.",
+    )
+    transaction_id: Annotated[str, Field(pattern="^txn_[a-z\\d]{26}$")] | None = Field(
+        None,
+        description="Paddle ID of a transaction. Bases the subscription from this transaction.",
+    )
+    items: None = Field(
+        None,
+        description="Items to include on the simulated subscription. Only existing products and prices can be simulated. Non-catalog items aren't supported. At least one recurring price must be provided.",
     )
 
 
@@ -1697,7 +1763,7 @@ class SimulationScenarioEventsType(Enum):
     subscription_cancellation = "subscription_cancellation"
 
 
-class Type10(Enum):
+class Type11(Enum):
     single_event = "single_event"
     scenario = "scenario"
 
@@ -1725,7 +1791,7 @@ class SimulationType(BaseModel):
         description="Group for this simulation type. Typically the entity that this event relates to.",
         examples=["Subscriptions"],
     )
-    type: Type10 | None = Field(
+    type: Type11 | None = Field(
         None,
         description="Type of simulation.",
         examples=["single_event", "scenario"],
@@ -1825,7 +1891,7 @@ class SubscriptionId(RootModel[Annotated[str, Field(pattern="^sub_[a-z\\d]{26}$"
 
 
 class SubscriptionItemCreateWithPriceId(BaseModel):
-    quantity: conint(ge=1) = Field(
+    quantity: Annotated[int, Field(ge=1)] = Field(
         ..., description="Quantity to bill for.", examples=[5]
     )
     price_id: Annotated[str, Field(pattern="^pri_[a-z\\d]{26}$")] = Field(
@@ -1971,7 +2037,61 @@ Paddle returns a unique payment link composed of the URL passed or your default 
     )
 
 
-class Customer1(BaseModel):
+class Breakdown(BaseModel):
+    credit: str | None = Field(
+        None, description="Total amount of credit adjustments.", examples=["8250"]
+    )
+    refund: str | None = Field(
+        None, description="Total amount of refund adjustments.", examples=["8250"]
+    )
+    chargeback: str | None = Field(
+        None, description="Total amount of chargeback adjustments.", examples=["0"]
+    )
+
+
+class AdjustmentsTotals(BaseModel):
+    subtotal: str | None = Field(
+        None, description="Total before tax.", examples=["15000"]
+    )
+    tax: str | None = Field(
+        None, description="Total tax on the subtotal.", examples=["1500"]
+    )
+    total: str | None = Field(None, description="Total after tax.", examples=["16500"])
+    fee: str | None = Field(
+        None, description="Total fee taken by Paddle.", examples=["300"]
+    )
+    earnings: str | None = Field(
+        None,
+        description="""Total earnings. This is the subtotal minus the Paddle fee.
+For tax adjustments, this value is negative, which means a positive effect in the transaction earnings.
+This is because the fee is originally calculated from the transaction total, so if a tax adjustment is made,
+then the fee portion of it is returned.
+As a result, the earnings from all the adjustments performed could be either negative, positive or zero.""",
+        examples=["14700"],
+    )
+    breakdown: Breakdown | None = Field(
+        None,
+        description="Breakdown of the total adjustments by adjustment action.",
+        title="AdjustmentTotalsBreakdown",
+    )
+    currency_code: CurrencyCode | None = Field(
+        None,
+        description="Three-letter ISO 4217 currency code used for adjustments for this transaction.",
+    )
+
+
+class Contact(BaseModel):
+    name: Name = Field(..., description="Full name of this contact.")
+    email: Email = Field(..., description="Email address for this contact.")
+
+
+class Type12(Enum):
+    flat = "flat"
+    flat_per_seat = "flat_per_seat"
+    percentage = "percentage"
+
+
+class Customer(BaseModel):
     name: Name | None = Field(
         None,
         description="Revised name of the customer for this transaction.",
@@ -1979,7 +2099,7 @@ class Customer1(BaseModel):
     )
 
 
-class Business1(BaseModel):
+class Business2(BaseModel):
     name: Name | None = Field(
         None,
         description="Revised name of the business for this transaction.",
@@ -1992,7 +2112,7 @@ class Business1(BaseModel):
     )
 
 
-class Address2(BaseModel):
+class Address(BaseModel):
     first_line: Annotated[str, Field(max_length=1024)] | None = Field(
         None,
         description="Revised first line of the address for this transaction.",
@@ -2015,17 +2135,17 @@ class Address2(BaseModel):
 
 class TransactionRevise(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    customer: Customer1 | None = Field(
+    customer: Customer | None = Field(
         None,
         description="Revised customer information for this transaction.",
         title="TransactionRevisionCustomer",
     )
-    business: Business1 | None = Field(
+    business: Business2 | None = Field(
         None,
         description="Revised business information for this transaction.",
         title="TransactionRevisionBusiness",
     )
-    address: Address2 | None = Field(
+    address: Address | None = Field(
         None,
         description="Revised address information for this transaction.",
         title="TransactionRevisionAddress",
@@ -2058,18 +2178,6 @@ class Checkout2(BaseModel):
         description="""Checkout URL to use for the payment link for this transaction. Pass the URL for an approved domain, or `null` to set to your default payment URL.
 
 Paddle returns a unique payment link composed of the URL passed or your default payment URL + `?_ptxn=` and the Paddle ID for this transaction.""",
-    )
-
-
-class Breakdown(BaseModel):
-    credit: str | None = Field(
-        None, description="Total amount of credit adjustments.", examples=["8250"]
-    )
-    refund: str | None = Field(
-        None, description="Total amount of refund adjustments.", examples=["8250"]
-    )
-    chargeback: str | None = Field(
-        None, description="Total amount of chargeback adjustments.", examples=["0"]
     )
 
 
@@ -2255,7 +2363,7 @@ class TransactionPayoutTotalsAdjusted(BaseModel):
     )
 
 
-class TaxRatesUsedItem3(BaseModel):
+class TaxRatesUsedItem4(BaseModel):
     tax_rate: str | None = Field(
         None,
         description="Rate used to calculate tax for this transaction preview.",
@@ -2291,7 +2399,9 @@ class TransactionPricingPreviewItem(BaseModel):
         None,
         description="Paddle ID for the price to add to this transaction, prefixed with `pri_`.",
     )
-    quantity: conint(ge=1) = Field(..., description="Quantity of the item to preview.")
+    quantity: Annotated[int, Field(ge=1)] = Field(
+        ..., description="Quantity of the item to preview."
+    )
 
 
 class TransactionTotals(TotalsModel):
@@ -2361,6 +2471,10 @@ class TransactionTotalsAdjusted(BaseModel):
         None,
         description="Three-letter ISO 4217 currency code of the currency used for this transaction.",
     )
+
+
+class UnderlyingDetails(BaseModel):
+    korea_local: KoreaLocalUnderlyingDetails | None = None
 
 
 class Action1(Enum):
@@ -2539,11 +2653,6 @@ class BillingDetailsUpdate(BaseModel):
     )
 
 
-class Contact(BaseModel):
-    name: Name = Field(..., description="Full name of this contact.")
-    email: Email = Field(..., description="Email address for this contact.")
-
-
 class Contact1(BaseModel):
     name: Name | None = Field(None, description="Full name of this contact.")
     email: Email = Field(..., description="Email address for this contact.")
@@ -2601,6 +2710,39 @@ class CreditBalance(BaseModel):
         None,
         description="Totals for this credit balance. Where a customer has more than one subscription in this currency with a credit balance, includes totals for all subscriptions.",
     )
+
+
+class CustomerPaymentMethod(BaseModel):
+    id: PaymentMethodId | None = None
+    customer_id: CustomerId | None = Field(
+        None,
+        description="Paddle ID of the customer that this payment method is saved for, prefixed with `ctm_`.",
+    )
+    address_id: AddressId | None = Field(
+        None,
+        description="Paddle ID of the address for this payment method, prefixed with `add_`.",
+    )
+    type: Type1 | None = Field(
+        None,
+        description="Type of payment method saved.",
+        title="SavedPaymentMethodType",
+    )
+    card: Card | None = Field(
+        None,
+        description="Information about the credit or debit card saved. `null` unless `type` is `card`.",
+    )
+    paypal: Paypal | None = Field(
+        None,
+        description="Information about the PayPal payment method saved. `null` unless `type` is `paypal`.",
+    )
+    underlying_details: UnderlyingDetails | None = None
+    origin: Origin | None = Field(
+        None,
+        description="Describes how this payment method was saved.",
+        title="PaymentMethodOrigin",
+    )
+    saved_at: SavedAt | None = None
+    updated_at: UpdatedAt | None = None
 
 
 class Subscription(BaseModel):
@@ -2720,8 +2862,12 @@ class EventType(BaseModel):
     )
 
 
-class KoreaLocalUnderlyingDetails(BaseModel):
-    type: KoreaLocalUnderlyingPaymentMethodType | None = None
+class ImportMetaSubscription(BaseModel):
+    external_id: Annotated[str, Field(min_length=1, max_length=200)] | None = None
+    imported_from: MigrationProviderPublic = Field(
+        ...,
+        description="Name of the platform or provider where this entity was imported from.",
+    )
 
 
 class Meta(BaseModel):
@@ -2731,6 +2877,15 @@ class Meta(BaseModel):
 class MetaPaginated(BaseModel):
     request_id: RequestId
     pagination: Pagination
+
+
+class MethodDetails(BaseModel):
+    type: TransactionPaymentMethodType | None = None
+    underlying_details: UnderlyingDetails | None = None
+    card: Card | None = Field(
+        None,
+        description="Information about the credit or debit card used to pay. `null` unless `type` is `card`.",
+    )
 
 
 class MigrationProvider(RootModel[MigrationProviderPublic]):
@@ -2807,7 +2962,7 @@ class NotificationSetting(BaseModel):
         None,
         description="Short description for this notification destination. Shown in the Paddle dashboard.",
     )
-    type: Type5 | None = Field(
+    type: Type6 | None = Field(
         None,
         description="Where notifications should be sent for this destination.",
         title="NotificationSettingType",
@@ -2819,7 +2974,7 @@ class NotificationSetting(BaseModel):
         True,
         description="Whether Paddle should try to deliver events to this notification destination.",
     )
-    api_version: conint(ge=1) | None = Field(
+    api_version: Annotated[int, Field(ge=1)] | None = Field(
         None,
         description="API version that returned objects for events should conform to. Must be a valid version of the Paddle API. Can't be a version older than your account default.",
     )
@@ -2849,7 +3004,7 @@ class NotificationSettingCreate(BaseModel):
         ...,
         description="Short description for this notification destination. Shown in the Paddle Dashboard.",
     )
-    type: Type5 = Field(
+    type: Type6 = Field(
         ...,
         description="Where notifications should be sent for this destination.",
         title="NotificationSettingType",
@@ -2861,7 +3016,7 @@ class NotificationSettingCreate(BaseModel):
         True,
         description="Whether Paddle should try to deliver events to this notification destination.",
     )
-    api_version: conint(ge=1) | None = Field(
+    api_version: Annotated[int, Field(ge=1)] | None = Field(
         None,
         description="API version that returned objects for events should conform to. Must be a valid version of the Paddle API. Can't be a version older than your account default. If omitted, defaults to your account default version.",
     )
@@ -2931,7 +3086,7 @@ class ReportBase(BaseModel):
 
 
 class ReportDiscounts(ReportBase):
-    type: Type8 = Field(
+    type: Type9 = Field(
         ...,
         description="Type of report to create.",
         examples=["discounts"],
@@ -2944,7 +3099,7 @@ class ReportDiscounts(ReportBase):
 
 
 class ReportProductsPrices(ReportBase):
-    type: Type9 = Field(
+    type: Type10 = Field(
         ...,
         description="Type of report to create.",
         examples=["products_prices"],
@@ -3027,38 +3182,6 @@ class SimulationConfigEntitiesSubscriptionCreationItems(BaseModel):
     transaction_id: None = Field(
         None,
         description="Paddle ID of an existing transaction. Simulates passing a transaction ID to Paddle.js.",
-    )
-
-
-class SimulationConfigEntitiesSubscriptionCreationTransaction(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    customer_id: CustomerId | None = Field(
-        None,
-        description="Paddle ID of a customer. Adds customer details to webhook payloads.",
-    )
-    address_id: AddressId | None = Field(
-        None,
-        description="Paddle ID of an address. Adds address details to webhook payloads. Requires `customer_id`.",
-    )
-    business_id: BusinessId | None = Field(
-        None,
-        description="Paddle ID of a business. Adds business details to webhook payloads. Requires `customer_id`.",
-    )
-    payment_method_id: PaymentMethodId | None = Field(
-        None,
-        description="Paddle ID of a payment method. Adds payment method details to webhook payloads. Requires `customer_id`.",
-    )
-    discount_id: DiscountId | None = Field(
-        None,
-        description="Paddle ID of a discount. Adds discount details (including price calculations) to webhook payloads. Requires `items` or `transaction_id` for the discount to be applied.",
-    )
-    transaction_id: TransactionId | None = Field(
-        None,
-        description="Paddle ID of a transaction. Bases the subscription from this transaction.",
-    )
-    items: None = Field(
-        None,
-        description="Items to include on the simulated subscription. Only existing products and prices can be simulated. Non-catalog items aren't supported. At least one recurring price must be provided.",
     )
 
 
@@ -3441,7 +3564,7 @@ class SubscriptionScheduledChange(BaseModel):
     )
 
 
-class Address1(BaseModel):
+class Address2(BaseModel):
     postal_code: Annotated[str, Field(max_length=200)] | None = Field(
         None,
         description="ZIP or postal code of this address. Include for more accurate tax calculations.",
@@ -3454,7 +3577,7 @@ class Address1(BaseModel):
 
 
 class TransactionItemCreateBase(BaseModel):
-    quantity: conint(ge=1) = Field(
+    quantity: Annotated[int, Field(ge=1)] = Field(
         ..., description="Quantity of this item on the transaction."
     )
     proration: TransactionItemProration | None = Field(
@@ -3470,8 +3593,37 @@ class TransactionItemCreateWithPriceId(TransactionItemCreateBase):
     )
 
 
-class UnderlyingDetails(BaseModel):
-    korea_local: KoreaLocalUnderlyingDetails | None = None
+class TransactionPaymentAttempt(BaseModel):
+    payment_attempt_id: str | None = Field(
+        None,
+        description="UUID for this payment attempt.",
+        examples=["497f776b-851d-4ebf-89ab-8ba0f75d2d6a"],
+    )
+    stored_payment_method_id: str | None = Field(
+        None,
+        description="UUID for the stored payment method used for this payment attempt. Deprecated - use `payment_method_id` instead.",
+        examples=["7636e781-3969-49f4-9c77-8226232e28a6"],
+    )
+    payment_method_id: PaymentMethodId | None = Field(
+        None,
+        description="Paddle ID of the payment method used for this payment attempt, prefixed with `paymtd_`.",
+    )
+    amount: str | None = Field(
+        None,
+        description="Amount for collection in the lowest denomination of a currency (e.g. cents for USD).",
+        examples=["1050"],
+    )
+    status: StatusPaymentAttempt | None = None
+    error_code: ErrorCode | None = Field(
+        None,
+        description="Reason why a payment attempt failed. Returns `null` if payment captured successfully.",
+    )
+    method_details: MethodDetails | None = None
+    created_at: CreatedAt | None = None
+    captured_at: Timestamp | None = Field(
+        None,
+        description="RFC 3339 datetime string of when this payment was captured. `null` if `status` is not `captured`.",
+    )
 
 
 class UnitPriceOverride(BaseModel):
@@ -3654,39 +3806,6 @@ class AdjustmentPreview(BaseModel):
     )
 
 
-class CustomerPaymentMethod(BaseModel):
-    id: PaymentMethodId | None = None
-    customer_id: CustomerId | None = Field(
-        None,
-        description="Paddle ID of the customer that this payment method is saved for, prefixed with `ctm_`.",
-    )
-    address_id: AddressId | None = Field(
-        None,
-        description="Paddle ID of the address for this payment method, prefixed with `add_`.",
-    )
-    type: Type1 | None = Field(
-        None,
-        description="Type of payment method saved.",
-        title="SavedPaymentMethodType",
-    )
-    card: Card | None = Field(
-        None,
-        description="Information about the credit or debit card saved. `null` unless `type` is `card`.",
-    )
-    paypal: Paypal | None = Field(
-        None,
-        description="Information about the PayPal payment method saved. `null` unless `type` is `paypal`.",
-    )
-    underlying_details: UnderlyingDetails | None = None
-    origin: Origin | None = Field(
-        None,
-        description="Describes how this payment method was saved.",
-        title="PaymentMethodOrigin",
-    )
-    saved_at: SavedAt | None = None
-    updated_at: UpdatedAt | None = None
-
-
 class Error(BaseModel):
     error: Error1 | None = Field(None, description="Represents an error.")
     meta: Meta | None = None
@@ -3697,23 +3816,6 @@ class ImportMeta(BaseModel):
     imported_from: MigrationProvider = Field(
         ...,
         description="Name of the platform or provider where this entity was imported from.",
-    )
-
-
-class ImportMetaSubscription(BaseModel):
-    external_id: ExternalId | None = None
-    imported_from: MigrationProvider = Field(
-        ...,
-        description="Name of the platform or provider where this entity was imported from.",
-    )
-
-
-class MethodDetails(BaseModel):
-    type: TransactionPaymentMethodType | None = None
-    underlying_details: UnderlyingDetails | None = None
-    card: Card | None = Field(
-        None,
-        description="Information about the credit or debit card used to pay. `null` unless `type` is `card`.",
     )
 
 
@@ -3814,6 +3916,37 @@ class PriceCreate(BaseModel):
     )
 
 
+class Product(BaseModel):
+    id: ProductId | None = None
+    name: ProductName | None = None
+    description: Annotated[str, Field(max_length=2048)] | None = Field(
+        None, description="Short description for this product."
+    )
+    type: CatalogType | None = "standard"
+    tax_category: TaxCategory | None = None
+    image_url: ImageUrl | EmptyString | None = Field(
+        None,
+        description="Image for this product. Included in the checkout and on some customer documents.",
+    )
+    custom_data: CustomData | None = Field(
+        None, description="Your own structured key-value data."
+    )
+    status: Status | None = "active"
+    import_meta: ImportMeta | None = Field(
+        None,
+        description="Import information for this entity. `null` if this entity is not imported.",
+    )
+    created_at: CreatedAt | None = None
+    updated_at: UpdatedAt | None = None
+
+
+class PriceIncludes(Price):
+    product: Product | None = Field(
+        None,
+        description="Related product for this price. Returned when the `include` parameter is used with the `product` value.",
+    )
+
+
 class PricePreview(BaseModel):
     id: PriceId | None = Field(
         None,
@@ -3901,30 +4034,6 @@ class PriceUpdate(BaseModel):
     )
 
 
-class Product(BaseModel):
-    id: ProductId | None = None
-    name: ProductName | None = None
-    description: Annotated[str, Field(max_length=2048)] | None = Field(
-        None, description="Short description for this product."
-    )
-    type: CatalogType | None = "standard"
-    tax_category: TaxCategory | None = None
-    image_url: ImageUrl | EmptyString | None = Field(
-        None,
-        description="Image for this product. Included in the checkout and on some customer documents.",
-    )
-    custom_data: CustomData | None = Field(
-        None, description="Your own structured key-value data."
-    )
-    status: Status | None = "active"
-    import_meta: ImportMeta | None = Field(
-        None,
-        description="Import information for this entity. `null` if this entity is not imported.",
-    )
-    created_at: CreatedAt | None = None
-    updated_at: UpdatedAt | None = None
-
-
 class ProductCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: ProductId | None = None
@@ -3998,7 +4107,7 @@ class ReportAdjustments(ReportBase):
 
 
 class ReportBalance(ReportBase):
-    type: Type7 = Field(
+    type: Type8 = Field(
         ...,
         description="Type of report to create.",
         examples=["balance"],
@@ -4125,7 +4234,7 @@ class Price2(BaseModel):
 
 
 class SubscriptionChargeCreateWithPrice(BaseModel):
-    quantity: conint(ge=1) = Field(
+    quantity: Annotated[int, Field(ge=1)] = Field(
         ..., description="Quantity to bill for.", examples=[5]
     )
     price: Price2 = Field(
@@ -4166,13 +4275,176 @@ class Price3(BaseModel):
 
 
 class SubscriptionChargeCreateWithPriceAndProduct(BaseModel):
-    quantity: conint(ge=1) = Field(
+    quantity: Annotated[int, Field(ge=1)] = Field(
         ..., description="Quantity to bill for.", examples=[5]
     )
     price: Price3 = Field(
         ...,
         description="Price object for a non-catalog item to charge for. Include a `product` object to create a non-catalog product for this non-catalog price.",
         title="SubscriptionChargeCreateWithProduct",
+    )
+
+
+class Address1(BaseModel):
+    id: AddressId | None = None
+    customer_id: CustomerId | None = Field(
+        None,
+        description="Paddle ID for the customer related to this address, prefixed with `cus_`.",
+    )
+    description: AddressDescription | None = None
+    first_line: AddressFirstLine | None = None
+    second_line: AddressSecondLine | None = None
+    city: AddressCity | None = None
+    postal_code: AddressPostalCode | None = None
+    region: AddressRegion | None = None
+    country_code: CountryCode | None = Field(
+        None,
+        description="Supported two-letter ISO 3166-1 alpha-2 country code for this address.",
+    )
+    custom_data: CustomData | None = Field(
+        None, description="Your own structured key-value data."
+    )
+    status: Status | None = "active"
+    created_at: CreatedAt | None = None
+    updated_at: UpdatedAt | None = None
+    import_meta: ImportMeta | None = Field(
+        None,
+        description="Import information for this entity. `null` if this entity is not imported.",
+    )
+
+
+class Business1(BaseModel):
+    id: BusinessId | None = None
+    customer_id: CustomerId | None = Field(
+        None,
+        description="Paddle ID for the customer related to this business, prefixed with `cus_`.",
+    )
+    name: Annotated[str, Field(min_length=1, max_length=1024)] | None = Field(
+        None, description="Name of this business."
+    )
+    company_number: Annotated[str, Field(max_length=1024)] | None = Field(
+        None, description="Company number for this business.", examples=["123456789"]
+    )
+    tax_identifier: Annotated[str, Field(max_length=1024)] | None = Field(
+        None,
+        description="Tax or VAT Number for this business.",
+        examples=["AB0123456789"],
+    )
+    status: Status | None = "active"
+    contacts: list[Contact] | None = Field(
+        None,
+        description="List of contacts related to this business, typically used for sending invoices.",
+        max_length=100,
+    )
+    created_at: CreatedAt | None = None
+    updated_at: UpdatedAt | None = None
+    custom_data: CustomData | None = Field(
+        None, description="Your own structured key-value data."
+    )
+    import_meta: ImportMeta | None = Field(
+        None,
+        description="Import information for this entity. `null` if this entity is not imported.",
+    )
+
+
+class Customer1(BaseModel):
+    id: CustomerId | None = None
+    name: Name | None = Field(
+        None,
+        description="Full name of this customer. Required when creating transactions where `collection_mode` is `manual` (invoices).",
+    )
+    email: Email | None = Field(None, description="Email address for this customer.")
+    marketing_consent: bool | None = Field(
+        False,
+        description="""Whether this customer opted into marketing from you. `false` unless customers check the marketing consent box
+when using Paddle Checkout. Set automatically by Paddle.""",
+    )
+    status: Status | None = "active"
+    custom_data: CustomData | None = Field(
+        None, description="Your own structured key-value data."
+    )
+    locale: str | None = Field(
+        "en",
+        description="Valid IETF BCP 47 short form locale tag. If omitted, defaults to `en`.",
+    )
+    created_at: CreatedAt | None = None
+    updated_at: UpdatedAt | None = None
+    import_meta: ImportMeta | None = Field(
+        None,
+        description="Import information for this entity. `null` if this entity is not imported.",
+    )
+
+
+class Discount2(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    id: DiscountId | None = None
+    status: StatusDiscount | None = "active"
+    description: Annotated[str, Field(min_length=1, max_length=500)] | None = Field(
+        None,
+        description="Short description for this discount for your reference. Not shown to customers.",
+    )
+    enabled_for_checkout: bool | None = Field(
+        True,
+        description="Whether this discount can be redeemed by customers at checkout (`true`) or not (`false`).",
+    )
+    code: DiscountCode | None = Field(
+        None,
+        description="Unique code that customers can use to redeem this discount at checkout. Not case-sensitive.",
+    )
+    type: Type12 | None = Field(
+        None,
+        description="Type of discount. Determines how this discount impacts the checkout or transaction total.",
+        title="DiscountType",
+    )
+    mode: DiscountMode | None = "standard"
+    amount: str | None = Field(
+        None,
+        description="Amount to discount by. For `percentage` discounts, must be an amount between `0.01` and `100`. For `flat` and `flat_per_seat` discounts, amount in the lowest denomination for a currency.",
+    )
+    currency_code: CurrencyCode | None = Field(
+        None,
+        description="Supported three-letter ISO 4217 currency code. Required where discount type is `flat` or `flat_per_seat`.",
+    )
+    recur: bool | None = Field(
+        False,
+        description="Whether this discount applies for multiple subscription billing periods (`true`) or not (`false`).",
+    )
+    maximum_recurring_intervals: Annotated[int, Field(ge=1)] | None = Field(
+        None,
+        description="""Number of subscription billing periods that this discount recurs for. Requires `recur`. `null` if this discount recurs forever.
+
+Subscription renewals, midcycle changes, and one-time charges billed to a subscription aren't considered a redemption. `times_used` is not incremented in these cases.""",
+    )
+    usage_limit: Annotated[int, Field(ge=1)] | None = Field(
+        None,
+        description="""Maximum number of times this discount can be redeemed. This is an overall limit for this discount, rather than a per-customer limit. `null` if this discount can be redeemed an unlimited amount of times.
+
+Paddle counts a usage as a redemption on a checkout, transaction, or the initial application against a subscription. Transactions created for subscription renewals, midcycle changes, and one-time charges aren't considered a redemption.""",
+    )
+    restrict_to: list[RestrictToItem] | None = Field(
+        None,
+        description="Product or price IDs that this discount is for. When including a product ID, all prices for that product can be discounted. `null` if this discount applies to all products and prices.",
+    )
+    expires_at: Timestamp | None = Field(
+        None,
+        description="""RFC 3339 datetime string of when this discount expires. Discount can no longer be redeemed after this date has elapsed. `null` if this discount can be redeemed forever.
+
+Expired discounts can't be redeemed against transactions or checkouts, but can be applied when updating subscriptions.""",
+    )
+    custom_data: CustomData | None = Field(
+        None, description="Your own structured key-value data."
+    )
+    times_used: int | None = Field(
+        None,
+        description="""How many times this discount has been redeemed. Automatically incremented by Paddle.
+
+Paddle counts a usage as a redemption on a checkout, transaction, or subscription. Transactions created for subscription renewals, midcycle changes, and one-time charges aren't considered a redemption.""",
+    )
+    created_at: CreatedAt | None = None
+    updated_at: UpdatedAt | None = None
+    import_meta: ImportMeta | None = Field(
+        None,
+        description="Import information for this entity. `null` if this entity is not imported.",
     )
 
 
@@ -4280,39 +4552,6 @@ class TransactionLineItem(BaseModel):
     )
 
 
-class TransactionPaymentAttempt(BaseModel):
-    payment_attempt_id: str | None = Field(
-        None,
-        description="UUID for this payment attempt.",
-        examples=["497f776b-851d-4ebf-89ab-8ba0f75d2d6a"],
-    )
-    stored_payment_method_id: str | None = Field(
-        None,
-        description="UUID for the stored payment method used for this payment attempt. Deprecated - use `payment_method_id` instead.",
-        examples=["7636e781-3969-49f4-9c77-8226232e28a6"],
-    )
-    payment_method_id: PaymentMethodId | None = Field(
-        None,
-        description="Paddle ID of the payment method used for this payment attempt, prefixed with `paymtd_`.",
-    )
-    amount: str | None = Field(
-        None,
-        description="Amount for collection in the lowest denomination of a currency (e.g. cents for USD).",
-        examples=["1050"],
-    )
-    status: StatusPaymentAttempt | None = None
-    error_code: ErrorCode | None = Field(
-        None,
-        description="Reason why a payment attempt failed. Returns `null` if payment captured successfully.",
-    )
-    method_details: MethodDetails | None = None
-    created_at: CreatedAt | None = None
-    captured_at: Timestamp | None = Field(
-        None,
-        description="RFC 3339 datetime string of when this payment was captured. `null` if `status` is not `captured`.",
-    )
-
-
 class TransactionPreviewItem(TransactionPreviewItemBase):
     price: PricePreview
 
@@ -4394,34 +4633,6 @@ class TransactionPricingPreviewRequest(TransactionPricingPreviewBase):
         description="List of items to preview price calculations for.",
         max_length=100,
         min_length=1,
-    )
-
-
-class Address(BaseModel):
-    id: AddressId | None = None
-    customer_id: CustomerId | None = Field(
-        None,
-        description="Paddle ID for the customer related to this address, prefixed with `cus_`.",
-    )
-    description: AddressDescription | None = None
-    first_line: AddressFirstLine | None = None
-    second_line: AddressSecondLine | None = None
-    city: AddressCity | None = None
-    postal_code: AddressPostalCode | None = None
-    region: AddressRegion | None = None
-    country_code: CountryCode | None = Field(
-        None,
-        description="Supported two-letter ISO 3166-1 alpha-2 country code for this address.",
-    )
-    custom_data: CustomData | None = Field(
-        None, description="Your own structured key-value data."
-    )
-    status: Status | None = "active"
-    created_at: CreatedAt | None = None
-    updated_at: UpdatedAt | None = None
-    import_meta: ImportMeta | None = Field(
-        None,
-        description="Import information for this entity. `null` if this entity is not imported.",
     )
 
 
@@ -4525,34 +4736,6 @@ class BusinessCreate(BaseModel):
     )
 
 
-class Customer(BaseModel):
-    id: CustomerId | None = None
-    name: Name | None = Field(
-        None,
-        description="Full name of this customer. Required when creating transactions where `collection_mode` is `manual` (invoices).",
-    )
-    email: Email | None = Field(None, description="Email address for this customer.")
-    marketing_consent: bool | None = Field(
-        False,
-        description="""Whether this customer opted into marketing from you. `false` unless customers check the marketing consent box
-when using Paddle Checkout. Set automatically by Paddle.""",
-    )
-    status: Status | None = "active"
-    custom_data: CustomData | None = Field(
-        None, description="Your own structured key-value data."
-    )
-    locale: str | None = Field(
-        "en",
-        description="Valid IETF BCP 47 short form locale tag. If omitted, defaults to `en`.",
-    )
-    created_at: CreatedAt | None = None
-    updated_at: UpdatedAt | None = None
-    import_meta: ImportMeta | None = Field(
-        None,
-        description="Import information for this entity. `null` if this entity is not imported.",
-    )
-
-
 class CustomerCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: CustomerId | None = None
@@ -4579,7 +4762,7 @@ when using Paddle Checkout. Set automatically by Paddle.""",
     )
 
 
-CustomerIncludes = Customer
+CustomerIncludes = Customer1
 
 
 class CustomerUpdate(BaseModel):
@@ -4641,13 +4824,13 @@ class Discount(BaseModel):
         False,
         description="Whether this discount applies for multiple subscription billing periods (`true`) or not (`false`).",
     )
-    maximum_recurring_intervals: conint(ge=1) | None = Field(
+    maximum_recurring_intervals: Annotated[int, Field(ge=1)] | None = Field(
         None,
         description="""Number of subscription billing periods that this discount recurs for. Requires `recur`. `null` if this discount recurs forever.
 
 Subscription renewals, midcycle changes, and one-time charges billed to a subscription aren't considered a redemption. `times_used` is not incremented in these cases.""",
     )
-    usage_limit: conint(ge=1) | None = Field(
+    usage_limit: Annotated[int, Field(ge=1)] | None = Field(
         None,
         description="""Maximum number of times this discount can be redeemed. This is an overall limit for this discount, rather than a per-customer limit. `null` if this discount can be redeemed an unlimited amount of times.
 
@@ -4719,13 +4902,13 @@ If omitted and `enabled_for_checkout` is `true`, Paddle generates a random 10-ch
         False,
         description="Whether this discount applies for multiple subscription billing periods (`true`) or not (`false`). If omitted, defaults to `false`.",
     )
-    maximum_recurring_intervals: conint(ge=1) | None = Field(
+    maximum_recurring_intervals: Annotated[int, Field(ge=1)] | None = Field(
         None,
         description="""Number of subscription billing periods that this discount recurs for. Requires `recur`. `null` if this discount recurs forever.
 
 Subscription renewals, midcycle changes, and one-time charges billed to a subscription aren't considered a redemption. `times_used` is not incremented in these cases.""",
     )
-    usage_limit: conint(ge=1) | None = Field(
+    usage_limit: Annotated[int, Field(ge=1)] | None = Field(
         None,
         description="""Maximum number of times this discount can be redeemed. This is an overall limit for this discount, rather than a per-customer limit. `null` if this discount can be redeemed an unlimited amount of times.
 
@@ -4795,13 +4978,6 @@ class ItemSubscription(BaseModel):
     product: Product | None = Field(
         None,
         description="Related product entity for this item. This reflects the product entity at the time it was added to the subscription.",
-    )
-
-
-class PriceIncludes(Price):
-    product: Product | None = Field(
-        None,
-        description="Related product for this price. Returned when the `include` parameter is used with the `product` value.",
     )
 
 
@@ -4941,8 +5117,28 @@ Non-catalog items can be for existing products, or you can pass a product object
     on_payment_failure: SubscriptionOnPaymentFailure | None = "prevent_change"
 
 
+class LineItem(TransactionPreviewLineItem):
+    proration: TransactionItemProration | None = Field(
+        None, description="How proration was calculated for this item."
+    )
+
+
+class RecurringTransactionDetails(BaseModel):
+    tax_rates_used: list[TaxRatesUsedItem4] | None = Field(
+        None, description="List of tax rates applied to this transaction preview."
+    )
+    totals: TransactionTotals | None = Field(
+        None,
+        description="Breakdown of the total for a transaction preview. `fee` and `earnings` always return `null` for transaction previews.",
+    )
+    line_items: list[LineItem] | None = Field(
+        None,
+        description="Information about line items for this transaction preview. Different from transaction preview `items` as they include totals calculated by Paddle. Considered the source of truth for line item totals.",
+    )
+
+
 class SubscriptionItemCreateWithPrice(BaseModel):
-    quantity: conint(ge=1) = Field(
+    quantity: Annotated[int, Field(ge=1)] = Field(
         ..., description="Quantity to bill for.", examples=[5]
     )
     price: TransactionPriceCreateWithProductId = Field(
@@ -4952,7 +5148,7 @@ class SubscriptionItemCreateWithPrice(BaseModel):
 
 
 class SubscriptionItemCreateWithPriceAndProduct(BaseModel):
-    quantity: conint(ge=1) = Field(
+    quantity: Annotated[int, Field(ge=1)] = Field(
         ..., description="Quantity to bill for.", examples=[5]
     )
     price: TransactionPriceCreateWithProduct = Field(
@@ -4961,14 +5157,8 @@ class SubscriptionItemCreateWithPriceAndProduct(BaseModel):
     )
 
 
-class LineItem(TransactionPreviewLineItem):
-    proration: TransactionItemProration | None = Field(
-        None, description="How proration was calculated for this item."
-    )
-
-
 class SubscriptionRecurringTransactionDetails(BaseModel):
-    tax_rates_used: list[TaxRatesUsedItem3] | None = Field(
+    tax_rates_used: list[TaxRatesUsedItem4] | None = Field(
         None, description="List of tax rates applied to this transaction preview."
     )
     totals: TransactionTotals | None = Field(
@@ -4982,7 +5172,7 @@ class SubscriptionRecurringTransactionDetails(BaseModel):
 
 
 class SubscriptionTransactionPreviewDetails(BaseModel):
-    tax_rates_used: list[TaxRatesUsedItem3] | None = Field(
+    tax_rates_used: list[TaxRatesUsedItem4] | None = Field(
         None, description="List of tax rates applied to this transaction preview."
     )
     totals: TransactionTotals | None = Field(
@@ -5026,7 +5216,7 @@ Non-catalog items can be for existing products, or you can pass a product object
 
 
 class TransactionPreviewCreateAddress(TransactionPreviewCreate):
-    address: Address1 = Field(..., description="Address for this transaction preview.")
+    address: Address2 = Field(..., description="Address for this transaction preview.")
 
 
 class TransactionPreviewCreateIpAddress(TransactionPreviewCreate):
@@ -5047,7 +5237,7 @@ class TransactionPreviewCreatePaddleIds(TransactionPreviewCreate):
     customer_id: CustomerId | None
 
 
-class LineItem2(TransactionLineItem):
+class LineItem3(TransactionLineItem):
     id: TransactionItemId | None = None
 
 
@@ -5065,14 +5255,14 @@ class TransactionDetails(BaseModel):
         None,
         description="Breakdown of the payout total for a transaction after adjustments. `null` until the transaction is `completed`.",
     )
-    line_items: list[LineItem2] | None = Field(
+    line_items: list[LineItem3] | None = Field(
         None,
         description="Information about line items for this transaction. Different from transaction `items` as they include totals calculated by Paddle. Considered the source of truth for line item totals.",
     )
 
 
 class TransactionPreviewDetails(BaseModel):
-    tax_rates_used: list[TaxRatesUsedItem3] | None = Field(
+    tax_rates_used: list[TaxRatesUsedItem4] | None = Field(
         None, description="List of tax rates applied to this transaction preview."
     )
     totals: TransactionTotals | None = Field(
@@ -5341,7 +5531,7 @@ Non-catalog items can be for existing products, or you can pass a product object
 
 
 class TransactionIncludes(Transaction):
-    address: Address | None = Field(
+    address: Address1 | None = Field(
         None,
         description="Address for this transaction. Reflects the entity at the time it was added to the transaction, or its revision if `revised_at` is not `null`. Returned when the `include` parameter is used with the `address` value and the transaction has an `address_id`.",
     )
@@ -5349,19 +5539,19 @@ class TransactionIncludes(Transaction):
         None,
         description="List of adjustments for this transaction. Returned when the `include` parameter is used with the `adjustment` value and the transaction has adjustments.",
     )
-    adjustments_totals: TransactionAdjustmentsTotalsInclude | None = Field(
+    adjustments_totals: AdjustmentsTotals | None = Field(
         None,
         description="Object containing totals for all adjustments on a transaction. Returned when the `include` parameter is used with the `adjustments_totals` value.",
     )
-    business: Business | None = Field(
+    business: Business1 | None = Field(
         None,
         description="Business for this transaction. Reflects the entity at the time it was added to the transaction, or its revision if `revised_at` is not `null`. Returned when the `include` parameter is used with the `business` value and the transaction has a `business_id`.",
     )
-    customer: Customer | None = Field(
+    customer: Customer1 | None = Field(
         None,
         description="Customer for this transaction. Reflects the entity at the time it was added to the transaction, or its revision if `revised_at` is not `null`. Returned when the `include` parameter is used with the `customer` value and the transaction has a `customer_id`.",
     )
-    discount: Discount | None = Field(
+    discount: Discount2 | None = Field(
         None,
         description="Discount for this transaction. Reflects the entity at the time it was added to the transaction. Returned when the `include` parameter is used with the `discount` value and the transaction has a `discount_id`.",
     )
@@ -5541,11 +5731,9 @@ class SubscriptionIncludes(Subscription1):
         None,
         description="Preview of the next transaction for this subscription. May include prorated charges that aren't yet billed and one-time charges. Returned when the `include` parameter is used with the `next_transaction` value. `null` if the subscription is scheduled to cancel or pause.",
     )
-    recurring_transaction_details: SubscriptionRecurringTransactionDetails | None = (
-        Field(
-            None,
-            description="Preview of the recurring transaction for this subscription. This is what the customer can expect to be billed when there are no prorated or one-time charges. Returned when the `include` parameter is used with the `recurring_transaction_details` value.",
-        )
+    recurring_transaction_details: RecurringTransactionDetails | None = Field(
+        None,
+        description="Preview of the recurring transaction for this subscription. This is what the customer can expect to be billed when there are no prorated or one-time charges. Returned when the `include` parameter is used with the `recurring_transaction_details` value.",
     )
 
 
