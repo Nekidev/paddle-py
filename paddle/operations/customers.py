@@ -100,7 +100,9 @@ class CustomerOperationsMixin:
         try:
             response = await self._client.post(
                 url,
-                json=customer.model_dump(mode="json"),
+                json=customer.model_dump(
+                    mode="json", exclude_unset=True, exclude_defaults=True
+                ),
                 auth=BearerAuth(self._token),
             )
 

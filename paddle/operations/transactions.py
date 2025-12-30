@@ -200,14 +200,14 @@ class TransactionOperationsMixin:
         if include is not ...:
             query["include"] = ",".join(include)
 
-        json = transaction.model_dump_json()
-
         try:
             response = await self._client.post(
                 url,
                 params=query,
                 auth=BearerAuth(self._token),
-                data=json,
+                json=transaction.model_dump(
+                    mode="json", exclude_unset=True, exclude_defaults=True
+                ),
             )
 
         except Exception as e:
