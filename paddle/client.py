@@ -1,9 +1,10 @@
 import httpx
 
+from paddle.operations.customers import CustomerOperationsMixin
 from paddle.operations.transactions import TransactionOperationsMixin
 
 
-class Paddle(TransactionOperationsMixin):
+class Paddle(CustomerOperationsMixin, TransactionOperationsMixin):
     """A Paddle client."""
 
     client = httpx.AsyncClient()
