@@ -85,3 +85,8 @@ else:
 ### Exceptions
 
 All exceptions raised by this library inherit from `paddle.exceptions.PaddleException`.
+
+## Contributing
+
+All contributions are welcome! Whether it's tests, bugs, documentation, or anything else, open an
+issue in our [GitHub repository](https://github.com/Nekidev/paddle-py). Thanks for your interest!
