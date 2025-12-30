@@ -4,7 +4,7 @@ from httpx import AsyncClient
 
 from pydantic import ValidationError as PydanticValidationError
 
-from paddle.client import BearerAuth
+from paddle.auth import BearerAuth
 from paddle.schemas import (
     Status,
     Customer1,
@@ -73,10 +73,14 @@ class CustomerOperationsMixin:
                 auth=BearerAuth(self.token),
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return PaginatedResponse[Customer1].model_validate_json(response.text)
@@ -99,10 +103,14 @@ class CustomerOperationsMixin:
                 auth=BearerAuth(self.token),
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[Customer1].model_validate_json(response.text)
@@ -124,10 +132,14 @@ class CustomerOperationsMixin:
                 auth=BearerAuth(self.token),
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[Customer1].model_validate_json(response.text)
@@ -151,10 +163,14 @@ class CustomerOperationsMixin:
                 auth=BearerAuth(self.token),
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[Customer1].model_validate_json(response.text)
@@ -184,10 +200,14 @@ class CustomerOperationsMixin:
                 auth=BearerAuth(self.token),
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[CreditBalance].model_validate_json(response.text)
@@ -209,10 +229,14 @@ class CustomerOperationsMixin:
                 auth=BearerAuth(self.token),
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[CustomerAuthenticationToken].model_validate_json(

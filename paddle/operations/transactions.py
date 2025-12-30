@@ -6,7 +6,7 @@ from httpx import AsyncClient
 
 from pydantic import BaseModel, ValidationError as PydanticValidationError
 
-from paddle.client import BearerAuth
+from paddle.auth import BearerAuth
 from paddle.schemas import (
     TransactionCreate,
     TransactionIncludes,
@@ -167,10 +167,14 @@ class TransactionOperationsMixin:
                 auth=BearerAuth(self.token),
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return PaginatedResponse[TransactionIncludes].model_validate_json(
@@ -205,10 +209,14 @@ class TransactionOperationsMixin:
                 data=json,
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return TransactionIncludes.model_validate_json(response.text)
@@ -238,10 +246,14 @@ class TransactionOperationsMixin:
                 auth=BearerAuth(self.token),
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[TransactionIncludes].model_validate_json(response.text)
@@ -275,10 +287,14 @@ class TransactionOperationsMixin:
                 data=json,
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[TransactionIncludes].model_validate_json(response.text)
@@ -303,10 +319,14 @@ class TransactionOperationsMixin:
                 data=json,
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[TransactionPreview].model_validate_json(response.text)
@@ -336,10 +356,14 @@ class TransactionOperationsMixin:
                 auth=BearerAuth(self.token),
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[InvoiceUrl].model_validate_json(response.text)
@@ -365,10 +389,14 @@ class TransactionOperationsMixin:
                 data=json,
             )
 
+        except Exception as e:
+            raise ApiError from e
+
+        try:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return Response[Transaction].model_validate_json(response.text)
