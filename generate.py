@@ -1,11 +1,14 @@
-from pathlib import Path
-
 import re
 import sys
+import ast
 
-from datamodel_code_generator import generate, DataModelType, InputFileType
+from pathlib import Path
+
+import astor
 
 from black import format_file_in_place, WriteBack, Mode
+
+from datamodel_code_generator import generate, DataModelType, InputFileType
 
 
 sys.setrecursionlimit(5000)
@@ -19,11 +22,6 @@ generate(
     output=Path("./paddle/schemas"),
     output_model_type=DataModelType.PydanticV2BaseModel,
 )
-
-
-import ast
-import astor
-from pathlib import Path
 
 
 def field_ast(type: str, args, keywords):
