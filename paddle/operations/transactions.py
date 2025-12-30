@@ -220,7 +220,7 @@ class TransactionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return TransactionIncludes.model_validate_json(response.text)
+            return Response[TransactionIncludes].model_validate_json(response.text)
 
         except PydanticValidationError as e:
             raise ValidationError from e
