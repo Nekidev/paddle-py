@@ -35,6 +35,13 @@ from paddle import Paddle
 client = Paddle(token="...")
 ```
 
+In case you're using the sandbox environment, pass `production = False` as an argument when
+initializing the `Paddle` class.
+
+```py
+client = Paddle(token="...", production=False)
+```
+
 Once you have the client, you can call any methods on it asynchronously. For example:
 
 ```py
