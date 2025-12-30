@@ -25,8 +25,9 @@ OrderBy = Literal[
 
 
 class CustomerOperationsMixin:
-    token: str
-    client: AsyncClient
+    _token: str
+    _client: AsyncClient
+    _endpoint: str
 
     async def list_customers(
         self,
@@ -41,7 +42,7 @@ class CustomerOperationsMixin:
     ) -> PaginatedResponse[Customer1]:
         """List customers."""
 
-        url = "https://api.paddle.com/customers"
+        url = f"https://{self._endpoint}/customers"
 
         query = {}
 
@@ -67,10 +68,10 @@ class CustomerOperationsMixin:
             query["status"] = status.value
 
         try:
-            response = await self.client.get(
+            response = await self._client.get(
                 url,
                 params=query,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
             )
 
         except Exception as e:
@@ -94,13 +95,13 @@ class CustomerOperationsMixin:
     ) -> Response[Customer1]:
         """Create a new customer."""
 
-        url = "https://api.paddle.com/customers"
+        url = f"https://{self._endpoint}/customers"
 
         try:
-            response = await self.client.post(
+            response = await self._client.post(
                 url,
                 json=customer.model_dump(mode="json"),
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
             )
 
         except Exception as e:
@@ -124,12 +125,12 @@ class CustomerOperationsMixin:
     ) -> Response[Customer1]:
         """Retrieve a specific customer by ID."""
 
-        url = f"https://api.paddle.com/customers/{customer_id}"
+        url = f"https://{self._endpoint}/customers/{customer_id}"
 
         try:
-            response = await self.client.get(
+            response = await self._client.get(
                 url,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
             )
 
         except Exception as e:
@@ -154,13 +155,13 @@ class CustomerOperationsMixin:
     ) -> Response[Customer1]:
         """Update a specific customer by ID."""
 
-        url = f"https://api.paddle.com/customers/{customer_id}"
+        url = f"https://{self._endpoint}/customers/{customer_id}"
 
         try:
-            response = await self.client.put(
+            response = await self._client.put(
                 url,
                 json=customer.model_dump(mode="json"),
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
             )
 
         except Exception as e:
@@ -186,7 +187,7 @@ class CustomerOperationsMixin:
     ) -> Response[CreditBalance]:
         """Retrieve credit balances for a specific customer."""
 
-        url = f"https://api.paddle.com/customers/{customer_id}/credit-balances"
+        url = f"https://{self._endpoint}/customers/{customer_id}/credit-balances"
 
         query = {}
 
@@ -194,10 +195,10 @@ class CustomerOperationsMixin:
             query["currency_codes"] = ",".join([code.value for code in currency_codes])
 
         try:
-            response = await self.client.get(
+            response = await self._client.get(
                 url,
                 params=query,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
             )
 
         except Exception as e:
@@ -221,12 +222,12 @@ class CustomerOperationsMixin:
     ) -> Response[CustomerAuthenticationToken]:
         """Create an authentication token for a specific customer."""
 
-        url = f"https://api.paddle.com/customers/{customer_id}/auth-token"
+        url = f"https://{self._endpoint}/customers/{customer_id}/auth-token"
 
         try:
-            response = await self.client.post(
+            response = await self._client.post(
                 url,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
             )
 
         except Exception as e:

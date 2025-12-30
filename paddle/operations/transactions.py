@@ -55,8 +55,9 @@ class InvoiceUrl(BaseModel):
 
 
 class TransactionOperationsMixin:
-    token: str
-    client: AsyncClient
+    _token: str
+    _client: AsyncClient
+    _endpoint: str
 
     async def list_transactions(
         self,
@@ -90,7 +91,7 @@ class TransactionOperationsMixin:
     ) -> PaginatedResponse[TransactionIncludes]:
         """List all transactions."""
 
-        url = "https://api.paddle.com/transactions"
+        url = f"https://{self._endpoint}/transactions"
 
         query = {}
 
@@ -161,10 +162,10 @@ class TransactionOperationsMixin:
             query["updated_at[GTE]"] = updated_at__gte.isoformat()
 
         try:
-            response = await self.client.get(
+            response = await self._client.get(
                 url,
                 params=query,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
             )
 
         except Exception as e:
@@ -192,7 +193,7 @@ class TransactionOperationsMixin:
     ) -> Response[TransactionIncludes]:
         """Create a transaction."""
 
-        url = "https://api.paddle.com/transactions"
+        url = f"https://{self._endpoint}/transactions"
 
         query = {}
 
@@ -202,10 +203,10 @@ class TransactionOperationsMixin:
         json = transaction.model_dump_json()
 
         try:
-            response = await self.client.post(
+            response = await self._client.post(
                 url,
                 params=query,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
                 data=json,
             )
 
@@ -232,7 +233,7 @@ class TransactionOperationsMixin:
     ) -> Response[TransactionIncludes]:
         """Retrieve a specific transaction."""
 
-        url = f"https://api.paddle.com/transactions/{transaction_id}"
+        url = f"https://{self._endpoint}/transactions/{transaction_id}"
 
         query = {}
 
@@ -240,10 +241,10 @@ class TransactionOperationsMixin:
             query["include"] = ",".join(include)
 
         try:
-            response = await self.client.get(
+            response = await self._client.get(
                 url,
                 params=query,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
             )
 
         except Exception as e:
@@ -270,7 +271,7 @@ class TransactionOperationsMixin:
     ) -> Response[TransactionIncludes]:
         """Update a specific transaction."""
 
-        url = f"https://api.paddle.com/transactions/{transaction_id}"
+        url = f"https://{self._endpoint}/transactions/{transaction_id}"
 
         query = {}
 
@@ -280,10 +281,10 @@ class TransactionOperationsMixin:
         json = transaction.model_dump_json()
 
         try:
-            response = await self.client.patch(
+            response = await self._client.patch(
                 url,
                 params=query,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
                 data=json,
             )
 
@@ -308,14 +309,14 @@ class TransactionOperationsMixin:
     ) -> Response[TransactionPreview]:
         """Preview a transaction."""
 
-        url = "https://api.paddle.com/transactions/preview"
+        url = f"https://{self._endpoint}/transactions/preview"
 
         json = transaction.model_dump_json()
 
         try:
-            response = await self.client.post(
+            response = await self._client.post(
                 url,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
                 data=json,
             )
 
@@ -342,7 +343,7 @@ class TransactionOperationsMixin:
     ) -> Response[InvoiceUrl]:
         """Get the invoice URL for a specific transaction."""
 
-        url = f"https://api.paddle.com/transactions/{transaction_id}/invoice"
+        url = f"https://{self._endpoint}/transactions/{transaction_id}/invoice"
 
         query = {}
 
@@ -350,10 +351,10 @@ class TransactionOperationsMixin:
             query["disposition"] = disposition
 
         try:
-            response = await self.client.get(
+            response = await self._client.get(
                 url,
                 params=query,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
             )
 
         except Exception as e:
@@ -378,14 +379,14 @@ class TransactionOperationsMixin:
     ) -> Response[Transaction]:
         """Revise customer information for a specific transaction."""
 
-        url = f"https://api.paddle.com/transactions/{transaction_id}/revise"
+        url = f"https://{self._endpoint}/transactions/{transaction_id}/revise"
 
         json = revision.model_dump_json()
 
         try:
-            response = await self.client.post(
+            response = await self._client.post(
                 url,
-                auth=BearerAuth(self.token),
+                auth=BearerAuth(self._token),
                 data=json,
             )
 
