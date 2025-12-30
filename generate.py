@@ -105,3 +105,8 @@ for file in Path("./paddle/schemas").rglob("*.py"):
     )
 
 print("Done.")
+print()
+print("Next steps:")
+print(
+    "1. Add a 'location' variant to the `schemas.TaxMode` enum. It's a valid variant not included in the OpenAPI spec."
+)
