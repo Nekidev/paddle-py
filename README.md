@@ -17,12 +17,34 @@ Or your favorite package manager.
 
 ## Usage
 
-Currently, the SDK does not provide functions to call the API. It does provide two things:
+Currently, the SDK does not provide functions to call the API for all resources. It does provide
+two things:
 
 1. API schemas as Pydantic models
 2. Webhook validation
+3. Operations on transactions
+
+### Calling the API
+
+To call the API, you need to initialize a client:
+
+```py
+from paddle import Paddle
+
+client = Paddle(token="...")
+```
+
+Once you have the client, you can call any methods on it asynchronously. For example:
+
+```py
+transaction = await client.get_transaction(transaction_id)
+```
+
+### Schemas
 
 The schemas can be found under `paddle.schemas`, like `paddle.schemas.Transaction`.
+
+### Webhooks
 
 Webhooks can be validated using `paddle.webhooks.verify`. For example:
 

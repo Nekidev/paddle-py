@@ -1,10 +1,13 @@
 [project]
 name = "python-paddle"
-version = "0.1.2"
+version = "0.2.0"
 description = "An unofficial SDK for Paddle's billing API and webhooks."
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["httpx>=0.28.1", "pydantic>=2.12.5"]
+dependencies = [
+    "httpx>=0.28.1",
+    "pydantic>=2.12.5",
+]
 license.file = "LICENSE"
 authors = [{ name = "Nyeki" }]
 

@@ -9,9 +9,7 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     EmailStr,
-    Field,
     RootModel,
-    constr,
 )
 
 
