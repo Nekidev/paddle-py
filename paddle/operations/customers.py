@@ -201,7 +201,7 @@ class CustomerOperationsMixin:
     ) -> Response[CustomerAuthenticationToken]:
         """Create an authentication token for a specific customer."""
 
-        url = f"https://api.paddle.com/customers/{customer_id}/authentication-token"
+        url = f"https://api.paddle.com/customers/{customer_id}/auth-token"
 
         try:
             response = await self.client.post(
