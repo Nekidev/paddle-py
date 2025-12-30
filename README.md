@@ -22,7 +22,8 @@ two things:
 
 1. API schemas as Pydantic models
 2. Webhook validation
-3. Operations on transactions
+3. Operations on customers
+4. Operations on transactions
 
 ### Calling the API
 
