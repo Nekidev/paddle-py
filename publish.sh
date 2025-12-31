@@ -1,3 +1,4 @@
+rm -rf ./dist
 uv version --bump patch
 uv build
 uv publish --username __token__

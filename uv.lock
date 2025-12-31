@@ -383,7 +383,7 @@ wheels = [
 
 [[package]]
 name = "python-paddle"
-version = "0.2.13"
+version = "0.2.14"
 source = { virtual = "." }
 dependencies = [
     { name = "httpx" },
