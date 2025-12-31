@@ -1967,6 +1967,7 @@ class TaxMode(Enum):
     account_setting = "account_setting"
     external = "external"
     internal = "internal"
+    location = "location"
 
 
 class TimePeriod(BaseModel):
