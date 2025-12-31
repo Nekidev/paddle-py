@@ -1,22 +1,20 @@
 from typing import Literal
 
 from httpx import AsyncClient
-
 from pydantic import ValidationError as PydanticValidationError
 
 from paddle.auth import BearerAuth
+from paddle.exceptions import ApiError, ValidationError
 from paddle.schemas import (
-    Status,
+    CreditBalance,
+    CurrencyCode,
     Customer1,
+    CustomerAuthenticationToken,
     CustomerCreate,
     CustomerUpdate,
-    CurrencyCode,
-    CreditBalance,
-    CustomerAuthenticationToken,
+    Status,
 )
-from paddle.schemas.human.response import Response, PaginatedResponse
-from paddle.exceptions import ValidationError, ApiError
-
+from paddle.schemas.human.response import PaginatedResponse, Response
 
 OrderBy = Literal[
     "id[ASC]",

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field
 
 from . import (
     CatalogType,

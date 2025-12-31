@@ -1,17 +1,12 @@
+import ast
 import re
 import sys
-import ast
-
 from pathlib import Path
 
 import astor
-
 import isort
-
-from black import format_file_in_place, WriteBack, Mode
-
-from datamodel_code_generator import generate, DataModelType, InputFileType
-
+from black import Mode, WriteBack, format_file_in_place
+from datamodel_code_generator import DataModelType, InputFileType, generate
 
 sys.setrecursionlimit(5000)
 
@@ -82,6 +77,7 @@ def transform_file(file_path: Path):
     new_code = new_code.replace("confloat,", "")
 
     file_path.write_text(new_code)
+
 
 for file in Path("./paddle/schemas").glob("*.py"):
     if file.name == "responses.py":

@@ -1,8 +1,6 @@
-import time
-
-import hmac
-
 import hashlib
+import hmac
+import time
 
 from paddle.webhooks.exceptions import ValidationError
 

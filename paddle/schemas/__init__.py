@@ -11,7 +11,6 @@ from pydantic import (
     EmailStr,
     Field,
     RootModel,
-    constr,
 )
 
 
