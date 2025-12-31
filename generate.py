@@ -6,6 +6,8 @@ from pathlib import Path
 
 import astor
 
+import isort
+
 from black import format_file_in_place, WriteBack, Mode
 
 from datamodel_code_generator import generate, DataModelType, InputFileType
@@ -72,31 +74,23 @@ def transform_file(file_path: Path):
 
     new_code = astor.to_source(tree)
 
-    new_code = "from typing import Annotated; from pydantic import Field\n" + new_code
+    new_code = "from typing import Annotated\nfrom pydantic import Field\n" + new_code
 
     new_code = re.sub(r"\(([a-zA-Z0-9_]+: )", r"\1 (", new_code)
     new_code = new_code.replace("constr,", "")
     new_code = new_code.replace("conint,", "")
     new_code = new_code.replace("confloat,", "")
 
-    lines = new_code.splitlines()
-
-    for i, line in enumerate(lines):
-        if line.startswith("from __future__"):
-            # move line to the top, __future__ imports must be first
-
-            lines.insert(0, lines.pop(i))
-            break
-
-    new_code = "\n".join(lines)
-
     file_path.write_text(new_code)
 
+for file in Path("./paddle/schemas").glob("*.py"):
+    if file.name == "responses.py":
+        continue
 
-for file in Path("./paddle/schemas").rglob("*.py"):
     print(f"Formatting {file}...")
 
     transform_file(file)
+    isort.file(file)
     format_file_in_place(
         file,
         fast=True,

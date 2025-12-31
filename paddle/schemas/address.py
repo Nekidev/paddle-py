@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from typing import Annotated
-from pydantic import Field
+
 from pydantic import BaseModel, Field, constr
+
 from . import (
     AddressId,
     CountryCode,

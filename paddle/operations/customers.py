@@ -14,7 +14,7 @@ from paddle.schemas import (
     CreditBalance,
     CustomerAuthenticationToken,
 )
-from paddle.schemas.response import Response, PaginatedResponse
+from paddle.schemas.human.response import Response, PaginatedResponse
 from paddle.exceptions import ValidationError, ApiError
 
 

@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import Annotated
-from pydantic import Field
+
 from enum import Enum
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
+
 from pydantic import (
     AnyUrl,
     AwareDatetime,
@@ -1968,7 +1968,6 @@ class TaxMode(Enum):
     account_setting = "account_setting"
     external = "external"
     internal = "internal"
-    location = "location"
 
 
 class TimePeriod(BaseModel):
