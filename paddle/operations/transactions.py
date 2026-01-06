@@ -3,23 +3,19 @@ from typing import Literal
 
 from httpx import AsyncClient
 from pydantic import BaseModel
-from pydantic import ValidationError as PydanticValidationError
 
 from paddle.auth import BearerAuth
-from paddle.exceptions import ApiError, ValidationError
 from paddle.schemas import (
     CollectionMode,
     OriginTransaction1,
     StatusTransaction,
-    Transaction,
     TransactionCreate,
-    TransactionIncludes,
-    TransactionPreview,
     TransactionPreviewCreate,
     TransactionRevise,
     TransactionUpdate,
 )
-from paddle.schemas.human.response import PaginatedResponse, Response
+from paddle.exceptions import ApiError, ValidationError
+from paddle.operations import Data
 
 Includes = Literal[
     "address",
@@ -86,7 +82,7 @@ class TransactionOperationsMixin:
         updated_at__lte: datetime = ...,
         updated_at__gt: datetime = ...,
         updated_at__gte: datetime = ...,
-    ) -> PaginatedResponse[TransactionIncludes]:
+    ) -> Data:
         """List all transactions."""
 
         url = f"https://{self._endpoint}/transactions"
@@ -176,11 +172,9 @@ class TransactionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return PaginatedResponse[TransactionIncludes].model_validate_json(
-                response.text
-            )
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def create_transaction(
@@ -188,7 +182,7 @@ class TransactionOperationsMixin:
         transaction: TransactionCreate,
         *,
         include: list[Includes] = ...,
-    ) -> Response[TransactionIncludes]:
+    ) -> Data:
         """Create a transaction."""
 
         url = f"https://{self._endpoint}/transactions"
@@ -218,9 +212,9 @@ class TransactionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[TransactionIncludes].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def get_transaction(
@@ -228,7 +222,7 @@ class TransactionOperationsMixin:
         transaction_id: str,
         *,
         include: list[Includes] = ...,
-    ) -> Response[TransactionIncludes]:
+    ) -> Data:
         """Retrieve a specific transaction."""
 
         url = f"https://{self._endpoint}/transactions/{transaction_id}"
@@ -255,9 +249,9 @@ class TransactionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[TransactionIncludes].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def update_transaction(
@@ -266,7 +260,7 @@ class TransactionOperationsMixin:
         transaction: TransactionUpdate,
         *,
         include: list[Includes] = ...,
-    ) -> Response[TransactionIncludes]:
+    ) -> Data:
         """Update a specific transaction."""
 
         url = f"https://{self._endpoint}/transactions/{transaction_id}"
@@ -296,15 +290,15 @@ class TransactionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[TransactionIncludes].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def preview_transaction(
         self,
         transaction: TransactionPreviewCreate,
-    ) -> Response[TransactionPreview]:
+    ) -> Data:
         """Preview a transaction."""
 
         url = f"https://{self._endpoint}/transactions/preview"
@@ -328,9 +322,9 @@ class TransactionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[TransactionPreview].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def get_transaction_invoice(
@@ -338,7 +332,7 @@ class TransactionOperationsMixin:
         transaction_id: str,
         *,
         disposition: Disposition = "attachment",
-    ) -> Response[InvoiceUrl]:
+    ) -> Data:
         """Get the invoice URL for a specific transaction."""
 
         url = f"https://{self._endpoint}/transactions/{transaction_id}/invoice"
@@ -365,16 +359,16 @@ class TransactionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[InvoiceUrl].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def revise_transaction_customer_information(
         self,
         transaction_id: str,
         revision: TransactionRevise,
-    ) -> Response[Transaction]:
+    ) -> Data:
         """Revise customer information for a specific transaction."""
 
         url = f"https://{self._endpoint}/transactions/{transaction_id}/revise"
@@ -398,7 +392,7 @@ class TransactionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[Transaction].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e

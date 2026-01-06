@@ -1,20 +1,17 @@
 from typing import Literal
 
 from httpx import AsyncClient
-from pydantic import ValidationError as PydanticValidationError
 
 from paddle.auth import BearerAuth
-from paddle.exceptions import ApiError, ValidationError
 from paddle.schemas import (
-    CreditBalance,
     CurrencyCode,
-    Customer1,
-    CustomerAuthenticationToken,
     CustomerCreate,
     CustomerUpdate,
     Status,
 )
-from paddle.schemas.human.response import PaginatedResponse, Response
+from paddle.exceptions import ApiError, ValidationError
+from paddle.operations import Data
+
 
 OrderBy = Literal[
     "id[ASC]",
@@ -37,7 +34,7 @@ class CustomerOperationsMixin:
         per_page: int = 30,
         search: str = ...,
         status: Status = ...,
-    ) -> PaginatedResponse[Customer1]:
+    ) -> Data:
         """List customers."""
 
         url = f"https://{self._endpoint}/customers"
@@ -82,15 +79,15 @@ class CustomerOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return PaginatedResponse[Customer1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def create_customer(
         self,
         customer: CustomerCreate,
-    ) -> Response[Customer1]:
+    ) -> Data:
         """Create a new customer."""
 
         url = f"https://{self._endpoint}/customers"
@@ -114,15 +111,15 @@ class CustomerOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[Customer1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def get_customer(
         self,
         customer_id: str,
-    ) -> Response[Customer1]:
+    ) -> Data:
         """Retrieve a specific customer by ID."""
 
         url = f"https://{self._endpoint}/customers/{customer_id}"
@@ -143,16 +140,16 @@ class CustomerOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[Customer1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def update_customer(
         self,
         customer_id: str,
         customer: CustomerUpdate,
-    ) -> Response[Customer1]:
+    ) -> Data:
         """Update a specific customer by ID."""
 
         url = f"https://{self._endpoint}/customers/{customer_id}"
@@ -174,9 +171,9 @@ class CustomerOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[Customer1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def get_customer_credit_balances(
@@ -184,7 +181,7 @@ class CustomerOperationsMixin:
         customer_id: str,
         *,
         currency_codes: list[CurrencyCode] = ...,
-    ) -> Response[CreditBalance]:
+    ) -> Data:
         """Retrieve credit balances for a specific customer."""
 
         url = f"https://{self._endpoint}/customers/{customer_id}/credit-balances"
@@ -211,15 +208,15 @@ class CustomerOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[CreditBalance].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def create_customer_authentication_token(
         self,
         customer_id: str,
-    ) -> Response[CustomerAuthenticationToken]:
+    ) -> Data:
         """Create an authentication token for a specific customer."""
 
         url = f"https://{self._endpoint}/customers/{customer_id}/auth-token"
@@ -240,9 +237,7 @@ class CustomerOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[CustomerAuthenticationToken].model_validate_json(
-                response.text
-            )
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e

@@ -4,24 +4,18 @@ from datetime import datetime
 
 from httpx import AsyncClient
 
-from pydantic import ValidationError as PydanticValidationError
-
 from paddle.auth import BearerAuth
-from paddle.exceptions import ApiError, ValidationError
 from paddle.schemas import (
     CollectionMode,
     Action,
     StatusSubscription,
-    Subscription1,
-    SubscriptionIncludes,
     SubscriptionUpdate,
-    SubscriptionPreview,
-    Transaction,
     SubscriptionCharge,
     EffectiveFrom,
     SubscriptionOnResume,
 )
-from paddle.schemas.human.response import PaginatedResponse, Response
+from paddle.exceptions import ApiError, ValidationError
+from paddle.operations import Data
 
 OrderBy = Literal[
     "id[ASC]",
@@ -53,7 +47,7 @@ class SubscriptionOperationsMixin:
         scheduled_change_action: Action | None = ...,
         next_billed_at: list[str] | None = ...,
         status: list[StatusSubscription] = ...,
-    ) -> PaginatedResponse[Subscription1]:
+    ) -> Data:
         """List subscriptions."""
 
         url = f"https://{self._endpoint}/subscriptions"
@@ -116,14 +110,14 @@ class SubscriptionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return PaginatedResponse[Subscription1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def get_subscription(
         self, subscription_id: str, *, includes: list[Includes] = ...
-    ) -> Response[SubscriptionIncludes]:
+    ) -> Data:
         """Retrieve a subscription."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}"
@@ -150,14 +144,14 @@ class SubscriptionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[SubscriptionIncludes].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def preview_subscription_update(
         self, subscription_id: str, update: SubscriptionUpdate
-    ) -> Response[SubscriptionPreview]:
+    ) -> Data:
         """Preview a subscription update."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}/preview"
@@ -179,14 +173,14 @@ class SubscriptionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[SubscriptionPreview].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def update_subscription(
         self, subscription_id: str, update: SubscriptionUpdate
-    ) -> Response[Subscription1]:
+    ) -> Data:
         """Update a subscription."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}"
@@ -208,14 +202,14 @@ class SubscriptionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[Subscription1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def get_subscription_update_payment_method_transaction(
         self, subscription_id: str
-    ) -> Response[Transaction]:
+    ) -> Data:
         """Retrieve the transaction for a customer to update their payment method for a subscription."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}/update-payment-method-transaction"
@@ -236,16 +230,16 @@ class SubscriptionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[Transaction].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def preview_subscription_one_time_charge(
         self,
         subscription_id: str,
         charge: SubscriptionCharge,
-    ) -> Response[SubscriptionPreview]:
+    ) -> Data:
         """Preview a one-time charge for a subscription."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}/charge/preview"
@@ -267,16 +261,16 @@ class SubscriptionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[SubscriptionPreview].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def create_subscription_one_time_charge(
         self,
         subscription_id: str,
         charge: SubscriptionCharge,
-    ) -> Response[Transaction]:
+    ) -> Data:
         """Create a one-time charge for a subscription."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}/charge"
@@ -298,14 +292,12 @@ class SubscriptionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[Transaction].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
-    async def activate_trialing_subscription(
-        self, subscription_id: str
-    ) -> Response[Subscription1]:
+    async def activate_trialing_subscription(self, subscription_id: str) -> Data:
         """Activate a trialing subscription."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}/activate"
@@ -326,9 +318,9 @@ class SubscriptionOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[Subscription1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def pause_subscription(
@@ -338,7 +330,7 @@ class SubscriptionOperationsMixin:
         effective_from: EffectiveFrom | None = None,
         resume_at: datetime | None = None,
         on_resume: SubscriptionOnResume,
-    ) -> Response[Subscription1]:
+    ) -> Data:
         """Pause a subscription."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}/pause"
@@ -370,9 +362,9 @@ class SubscriptionOperationsMixin:
             raise ApiError from e
 
         try:
-            return Response[Subscription1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def resume_subscription(
@@ -381,7 +373,7 @@ class SubscriptionOperationsMixin:
         *,
         effective_from: datetime | Literal["immediately"],
         on_resume: SubscriptionOnResume = SubscriptionOnResume.start_new_billing_period,
-    ) -> Response[Subscription1]:
+    ) -> Data:
         """Resume a paused subscription."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}/resume"
@@ -412,9 +404,9 @@ class SubscriptionOperationsMixin:
             raise ApiError from e
 
         try:
-            return Response[Subscription1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def cancel_subscription(
@@ -422,7 +414,7 @@ class SubscriptionOperationsMixin:
         subscription_id: str,
         *,
         effective_from: EffectiveFrom = EffectiveFrom.next_billing_period,
-    ) -> Response[Subscription1]:
+    ) -> Data:
         """Cancel a subscription."""
 
         url = f"https://{self._endpoint}/subscriptions/{subscription_id}/cancel"
@@ -448,7 +440,7 @@ class SubscriptionOperationsMixin:
             raise ApiError from e
 
         try:
-            return Response[Subscription1].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e

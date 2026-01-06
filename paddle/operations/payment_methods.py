@@ -5,8 +5,10 @@ from pydantic import ValidationError as PydanticValidationError
 
 from paddle.auth import BearerAuth
 from paddle.exceptions import ApiError, ValidationError
+from paddle.operations import Data
 from paddle.schemas import CustomerPaymentMethod
 from paddle.schemas.human.response import PaginatedResponse, Response
+
 
 OrderBy = Literal[
     "id[ASC]",
@@ -28,7 +30,7 @@ class PaymentMethodOperationsMixin:
         order_by: OrderBy = ...,
         per_page: int = 200,
         supports_checkout: bool = ...,
-    ) -> PaginatedResponse[CustomerPaymentMethod]:
+    ) -> Data:
         """List a customer's payment methods."""
 
         url = f"https://{self._endpoint}/customers/{customer_id}/payment-methods"
@@ -78,7 +80,7 @@ class PaymentMethodOperationsMixin:
         self,
         customer_id: str,
         payment_method_id: str,
-    ) -> Response[CustomerPaymentMethod]:
+    ) -> Data:
         """Retrieve a customer's payment method."""
 
         url = f"https://{self._endpoint}/customers/{customer_id}/payment-methods/{payment_method_id}"
