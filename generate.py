@@ -1,11 +1,19 @@
-import ast
 import re
+
+import ast
+
 import sys
+
 from pathlib import Path
 
+from getpass import getpass
+
 import astor
+
 import isort
+
 from black import Mode, WriteBack, format_file_in_place
+
 from datamodel_code_generator import DataModelType, InputFileType, generate
 
 sys.setrecursionlimit(5000)
@@ -97,6 +105,9 @@ for file in Path("./paddle/schemas").glob("*.py"):
 print("Done.")
 print()
 print("Next steps:")
-print(
-    "1. Add a 'location' variant to the `schemas.TaxMode` enum. It's a valid variant not included in the OpenAPI spec."
+getpass(
+    "1. Add a 'location' variant to the `schemas.TaxMode` enum. It's a valid variant not included in the OpenAPI spec. (enter to continue)"
+)
+getpass(
+    "2. Add 'blik', 'kakao_pay', 'south_korea_local_card', 'mb_way', 'naver_way', 'pix', 'samsung_pay', and 'upi' to the `schemas.PaymentMethodType` enum. (enter to continue)"
 )
