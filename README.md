@@ -24,6 +24,8 @@ two things:
 2. Webhook validation
 3. Operations on customers
 4. Operations on transactions
+5. Operations on saved payment methods
+6. Operations on subscriptions
 
 ### Calling the API
 
