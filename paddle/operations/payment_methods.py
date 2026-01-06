@@ -69,11 +69,9 @@ class PaymentMethodOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return PaginatedResponse[CustomerPaymentMethod].model_validate_json(
-                response.text
-            )
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def get_payment_method(
@@ -101,9 +99,9 @@ class PaymentMethodOperationsMixin:
             raise ApiError(response.text) from e
 
         try:
-            return Response[CustomerPaymentMethod].model_validate_json(response.text)
+            return response.json()
 
-        except PydanticValidationError as e:
+        except Exception as e:
             raise ValidationError from e
 
     async def delete_payment_method(
