@@ -109,5 +109,5 @@ getpass(
     "1. Add a 'location' variant to the `schemas.TaxMode` enum. It's a valid variant not included in the OpenAPI spec. (enter to continue)"
 )
 getpass(
-    "2. Add 'blik', 'kakao_pay', 'south_korea_local_card', 'mb_way', 'naver_way', 'pix', 'samsung_pay', and 'upi' to the `schemas.PaymentMethodType` enum. (enter to continue)"
+    "2. Add 'blik', 'kakao_pay', 'south_korea_local_card', 'mb_way', 'naver_way', 'pix', 'samsung_pay', and 'upi' to the `schemas.PaymentMethodType` and `schemas.Type1` enums. (enter to continue)"
 )

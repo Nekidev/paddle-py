@@ -599,6 +599,14 @@ class Type1(Enum):
     google_pay = "google_pay"
     korea_local = "korea_local"
     paypal = "paypal"
+    blik = "blik"
+    kakao_pay = "kakao_pay"
+    south_korea_local_card = "south_korea_local_card"
+    mb_way = "mb_way"
+    naver_pay = "naver_pay"
+    pix = "pix"
+    samsung_pay = "samsung_pay"
+    upi = "upi"
 
 
 class Origin(Enum):
