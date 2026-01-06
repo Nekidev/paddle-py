@@ -2,11 +2,15 @@ import httpx
 
 from paddle.operations.customers import CustomerOperationsMixin
 from paddle.operations.transactions import TransactionOperationsMixin
+from paddle.operations.subscriptions import SubscriptionOperationsMixin
 from paddle.operations.payment_methods import PaymentMethodOperationsMixin
 
 
 class Paddle(
-    CustomerOperationsMixin, TransactionOperationsMixin, PaymentMethodOperationsMixin
+    CustomerOperationsMixin,
+    TransactionOperationsMixin,
+    SubscriptionOperationsMixin,
+    PaymentMethodOperationsMixin,
 ):
     """A Paddle client."""
 
