@@ -359,7 +359,7 @@ class SubscriptionOperationsMixin:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return response.json()
@@ -401,7 +401,7 @@ class SubscriptionOperationsMixin:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return response.json()
@@ -437,7 +437,7 @@ class SubscriptionOperationsMixin:
             response.raise_for_status()
 
         except Exception as e:
-            raise ApiError from e
+            raise ApiError(response.text) from e
 
         try:
             return response.json()
