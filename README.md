@@ -26,6 +26,8 @@ two things:
 4. Operations on transactions
 5. Operations on saved payment methods
 6. Operations on subscriptions
+7. Operations on addresses
+8. Operations on businesses
 
 ### Calling the API
 

@@ -1,13 +1,17 @@
 import httpx
 
+from paddle.operations.addresses import AddressOperationsMixin
 from paddle.operations.customers import CustomerOperationsMixin
+from paddle.operations.businesses import BusinessOperationsMixin
 from paddle.operations.transactions import TransactionOperationsMixin
 from paddle.operations.subscriptions import SubscriptionOperationsMixin
 from paddle.operations.payment_methods import PaymentMethodOperationsMixin
 
 
 class Paddle(
+    AddressOperationsMixin,
     CustomerOperationsMixin,
+    BusinessOperationsMixin,
     TransactionOperationsMixin,
     SubscriptionOperationsMixin,
     PaymentMethodOperationsMixin,
