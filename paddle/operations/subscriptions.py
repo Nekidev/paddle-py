@@ -159,7 +159,7 @@ class SubscriptionOperationsMixin:
         try:
             response = await self._client.patch(
                 url,
-                json=update.model_dump(),
+                json=update.model_dump(exclude_unset=True),
                 auth=BearerAuth(self._token),
             )
 
@@ -188,7 +188,7 @@ class SubscriptionOperationsMixin:
         try:
             response = await self._client.patch(
                 url,
-                json=update.model_dump(),
+                json=update.model_dump(exclude_unset=True),
                 auth=BearerAuth(self._token),
             )
 
